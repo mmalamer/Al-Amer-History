@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بنو عقيل — وثائقي النسب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Markazi+Text:wght@500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night-950:#0d0906;
+    --night-800:#1c130c;
+    --night-700:#2a1d12;
+    --ember-500:#c97a35;
+    --gold-400:#d8b568;
+    --gold-600:#a67c34;
+    --sand-50:#f4ead2;
+    --sand-100:#e9d7ac;
+    --oud-900:#2b2015;
+    --oud-700:#4a3826;
+    --clay-600:#9c4a2c;
+    --emerald-700:#3c5c46;
+    --emerald-900:#22331f;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--sand-50);
+    color:var(--oud-900);
+    font-family:'Tajawal', sans-serif;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{ margin:0; }
+  ::selection{ background:var(--gold-400); color:var(--night-950); }
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--gold-400);
+    outline-offset:3px;
+  }
+
+  /* ============ PROGRESS RAIL ============ */
+  .progress-rail{
+    position:fixed; top:0; right:0; left:0; height:3px;
+    background:rgba(0,0,0,.08);
+    z-index:100;
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--clay-600), var(--gold-400));
+  }
+
+  /* ============ CHAPTER NAV ============ */
+  .chapter-nav{
+    position:fixed;
+    left:1.4rem; top:50%;
+    transform:translateY(-50%);
+    z-index:90;
+    display:flex; flex-direction:column; gap:1rem;
+    padding:0; margin:0; border:0; background:none;
+  }
+  .chapter-dot{
+    width:11px; height:11px; border-radius:50%;
+    background:rgba(43,32,21,.25);
+    border:1px solid rgba(43,32,21,.35);
+    cursor:pointer;
+    padding:0;
+    transition:background .3s, transform .3s;
+    position:relative;
+  }
+  .chapter-dot.active{
+    background:var(--ember-500);
+    border-color:var(--ember-500);
+    transform:scale(1.4);
+  }
+  .chapter-dot .label{
+    position:absolute; left:140%; top:50%; transform:translateY(-50%);
+    white-space:nowrap;
+    font-size:.72rem;
+    background:var(--night-950);
+    color:var(--sand-50);
+    padding:.25rem .6rem;
+    border-radius:3px;
+    opacity:0; pointer-events:none;
+    transition:opacity .2s;
+  }
+  .chapter-dot:hover .label{ opacity:1; }
+  @media (max-width:780px){ .chapter-nav{ display:none; } }
+
+  /* ============ CINEMATIC HERO ============ */
+  .cinema-hero{
+    position:relative;
+    height:100vh;
+    min-height:640px;
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--night-950);
+  }
+  .sky{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 50% 115%, var(--ember-500) 0%, rgba(201,122,53,0) 45%),
+      linear-gradient(180deg, var(--night-950) 0%, var(--night-800) 55%, var(--night-700) 100%);
+  }
+  .stars{
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 20%, rgba(244,234,210,.8), transparent),
+      radial-gradient(1px 1px at 28% 12%, rgba(244,234,210,.6), transparent),
+      radial-gradient(1.5px 1.5px at 44% 30%, rgba(244,234,210,.7), transparent),
+      radial-gradient(1px 1px at 63% 8%, rgba(244,234,210,.5), transparent),
+      radial-gradient(1.5px 1.5px at 78% 22%, rgba(244,234,210,.8), transparent),
+      radial-gradient(1px 1px at 92% 14%, rgba(244,234,210,.6), transparent),
+      radial-gradient(1.5px 1.5px at 8% 45%, rgba(244,234,210,.5), transparent),
+      radial-gradient(1px 1px at 53% 40%, rgba(244,234,210,.6), transparent);
+    opacity:.9;
+    animation:twinkle 6s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle{ from{opacity:.5;} to{opacity:1;} }
+
+  .dunes{
+    position:absolute; bottom:0; right:-5%; left:-5%;
+    height:42%;
+  }
+  .dunes svg{ width:100%; height:100%; display:block; }
+  .dunes-far{ opacity:.55; animation:driftFar 40s linear infinite alternate; }
+  .dunes-near{ opacity:.9; animation:driftNear 26s linear infinite alternate; }
+  @keyframes driftFar{ from{ transform:translateX(-1%) scale(1.02); } to{ transform:translateX(1.5%) scale(1.05); } }
+  @keyframes driftNear{ from{ transform:translateX(1%) scale(1.03); } to{ transform:translateX(-1.5%) scale(1.06); } }
+
+  .dust{
+    position:absolute; border-radius:50%;
+    background:var(--gold-400);
+    opacity:0;
+    pointer-events:none;
+    animation:rise linear infinite;
+  }
+  @keyframes rise{
+    0%{ opacity:0; transform:translateY(0) translateX(0); }
+    10%{ opacity:.5; }
+    90%{ opacity:.3; }
+    100%{ opacity:0; transform:translateY(-90vh) translateX(var(--dx)); }
+  }
+
+  .vignette{
+    position:absolute; inset:0;
+    background:radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%);
+    pointer-events:none;
+  }
+
+  .hero-content{
+    position:relative; z-index:3;
+    text-align:center;
+    padding:0 6vw;
+    color:var(--sand-50);
+  }
+  .kicker{
+    letter-spacing:.45em;
+    font-size:.7rem;
+    color:var(--gold-400);
+    margin-bottom:1.6rem;
+    font-weight:700;
+    opacity:0;
+    animation:fadeUp .9s ease forwards .3s;
+  }
+  .hero-title{
+    font-family:'Amiri', serif;
+    font-weight:700;
+    font-size:clamp(2.4rem, 7vw, 5.6rem);
+    line-height:1.2;
+  }
+  .hero-title .word{
+    display:inline-block;
+    opacity:0;
+    transform:translateY(22px);
+    animation:fadeUp .9s cubic-bezier(.2,.7,.2,1) forwards;
+  }
+  .hero-title .word:nth-child(1){ animation-delay:.5s; }
+  .hero-title .word:nth-child(2){ animation-delay:.68s; }
+  .hero-title .word:nth-child(3){ animation-delay:.86s; }
+  .hero-title .word:nth-child(4){ animation-delay:1.04s; }
+
+  .hero-sub{
+    font-family:'Markazi Text', serif;
+    font-size:1.3rem;
+    color:var(--gold-400);
+    margin-top:1rem;
+    opacity:0;
+    animation:fadeUp .9s ease forwards 1.3s;
+  }
+  .hero-desc{
+    max-width:600px;
+    margin:1.6rem auto 0;
+    font-size:1rem;
+    line-height:2;
+    color:rgba(244,234,210,.8);
+    opacity:0;
+    animation:fadeUp .9s ease forwards 1.5s;
+  }
+  @keyframes fadeUp{ to{ opacity:1; transform:translateY(0); } }
+
+  .scroll-cue{
+    position:absolute; bottom:2.6rem; left:50%; transform:translateX(-50%);
+    z-index:3;
+    display:flex; flex-direction:column; align-items:center; gap:.5rem;
+    color:var(--sand-50);
+    opacity:0;
+    animation:fadeUp .9s ease forwards 2s;
+  }
+  .scroll-cue .stick{
+    width:1px; height:34px;
+    background:linear-gradient(180deg, var(--gold-400), transparent);
+    position:relative;
+    overflow:hidden;
+  }
+  .scroll-cue .stick::after{
+    content:""; position:absolute; top:-100%; right:0; left:0; height:100%;
+    background:var(--sand-50);
+    animation:trickle 1.8s ease-in-out infinite;
+  }
+  @keyframes trickle{ to{ top:100%; } }
+  .scroll-cue span{ font-size:.72rem; letter-spacing:.2em; color:rgba(244,234,210,.7); }
+
+  @media (prefers-reduced-motion: reduce){
+    .stars,.dunes-far,.dunes-near,.dust,.scroll-cue .stick::after{ animation:none !important; }
+    .hero-title .word,.kicker,.hero-sub,.hero-desc,.scroll-cue{ opacity:1 !important; transform:none !important; animation:none !important; }
+  }
+
+  /* ============ SECTION HEADINGS ============ */
+  .section-frame{
+    max-width:1080px;
+    margin:0 auto;
+    padding:6.5rem 1.4rem 2rem;
+  }
+  .section-eyebrow{
+    display:flex; align-items:center; gap:.8rem;
+    font-family:'Markazi Text', serif;
+    color:var(--clay-600);
+    font-weight:600;
+    font-size:1rem;
+    margin-bottom:.6rem;
+  }
+  .section-eyebrow::before{
+    content:""; width:34px; height:1px; background:var(--clay-600);
+  }
+  .section-heading{
+    font-family:'Amiri', serif;
+    font-weight:700;
+    font-size:clamp(1.9rem, 3.6vw, 2.7rem);
+    color:var(--oud-900);
+    margin-bottom:.9rem;
+  }
+  .section-note{
+    max-width:640px;
+    color:var(--oud-700);
+    font-size:.95rem;
+    line-height:1.9;
+  }
+
+  /* ============ MAP ============ */
+  .map-section{ background:var(--sand-50); }
+  .map-stage{
+    position:relative;
+    max-width:1080px;
+    margin:2.6rem auto 0;
+    padding:0 1.4rem;
+    aspect-ratio:1000/320;
+  }
+  .map-stage svg{ width:100%; height:100%; display:block; overflow:visible; }
+  .route-path{
+    fill:none;
+    stroke:var(--oud-700);
+    stroke-width:3;
+    stroke-linecap:round;
+    stroke-dasharray:2400;
+    stroke-dashoffset:2400;
+    transition:stroke-dashoffset 2.6s cubic-bezier(.2,.6,.2,1);
+  }
+  .map-stage.in-view .route-path{ stroke-dashoffset:0; }
+  .route-path-bg{
+    fill:none;
+    stroke:rgba(74,56,42,.15);
+    stroke-width:3;
+    stroke-linecap:round;
+  }
+  .node-dot{
+    fill:var(--gold-400);
+    stroke:var(--oud-900);
+    stroke-width:2.5;
+  }
+  .caravan{
+    opacity:0;
+    transition:opacity .4s;
+  }
+  .map-stage.in-view .caravan{ opacity:1; }
+
+  .map-label{
+    position:absolute;
+    transform:translate(-50%, 0);
+    text-align:center;
+    width:170px;
+    opacity:0;
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .map-stage.in-view .map-label{ opacity:1; }
+  .map-label .num{
+    font-family:'Markazi Text', serif;
+    font-weight:700;
+    color:var(--clay-600);
+    font-size:.85rem;
+  }
+  .map-label .place{
+    font-family:'Amiri', serif;
+    font-weight:700;
+    font-size:1.02rem;
+    color:var(--oud-900);
+  }
+  .map-label.below{ transform:translate(-50%, 18px); }
+  .map-label.above{ transform:translate(-50%, calc(-100% - 18px)); }
+  .map-note{
+    text-align:center;
+    font-size:.75rem;
+    color:var(--oud-700);
+    opacity:.75;
+    margin-top:1.4rem;
+  }
+
+  /* ============ TRUNK TIMELINE ============ */
+  .timeline-wrap{
+    position:relative;
+    max-width:1080px;
+    margin:0 auto;
+    padding:3rem 1.2rem 6rem;
+  }
+  .trunk{
+    position:absolute; top:0; bottom:0; right:50%;
+    transform:translateX(50%);
+    width:10px; border-radius:6px;
+    background:repeating-linear-gradient(180deg, var(--oud-700) 0 6px, var(--oud-900) 6px 12px);
+    box-shadow:0 0 0 3px var(--sand-50), inset 0 0 6px rgba(0,0,0,.4);
+    z-index:0;
+  }
+  .era{
+    position:relative;
+    display:grid;
+    grid-template-columns:1fr 78px 1fr;
+    column-gap:1rem;
+    align-items:start;
+    margin-bottom:3.6rem;
+    opacity:0; transform:translateY(24px);
+    transition:opacity .7s ease, transform .7s ease;
+  }
+  .era.visible{ opacity:1; transform:translateY(0); }
+
+  .era-num{
+    position:absolute;
+    top:-1.6rem;
+    font-family:'Amiri', serif;
+    font-weight:700;
+    font-size:6.5rem;
+    line-height:1;
+    color:var(--oud-900);
+    opacity:.06;
+    z-index:0;
+    pointer-events:none;
+    user-select:none;
+  }
+  .era:nth-child(odd) .era-num{ left:2rem; }
+  .era:nth-child(even) .era-num{ right:2rem; }
+
+  .node{ grid-column:2; position:relative; z-index:2; display:flex; align-items:center; justify-content:center; }
+  .medallion{
+    width:64px; height:64px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-400), var(--gold-600) 65%, #7d5b25 100%);
+    border:3px solid var(--oud-900);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem;
+    box-shadow:0 3px 10px rgba(44,33,24,.35);
+  }
+  .era.final .medallion{
+    background:radial-gradient(circle at 35% 30%, #d9ecd9, var(--emerald-700) 65%, var(--emerald-900) 100%);
+  }
+
+  .card{
+    position:relative; z-index:1;
+    background:#fffdf6;
+    border:1px solid rgba(74,56,42,.18);
+    border-radius:4px;
+    padding:1.4rem 1.6rem;
+    box-shadow:0 4px 18px rgba(44,33,24,.08);
+  }
+  .era:nth-child(odd) .card{ grid-column:3; }
+  .era:nth-child(even) .card{ grid-column:1; }
+  .card::before{
+    content:""; position:absolute; top:1.6rem; width:0; height:0;
+    border-top:8px solid transparent; border-bottom:8px solid transparent;
+  }
+  .era:nth-child(odd) .card::before{ right:-8px; border-left:8px solid #fffdf6; }
+  .era:nth-child(even) .card::before{ left:-8px; border-right:8px solid #fffdf6; }
+
+  .era-eyebrow{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; margin-bottom:.5rem; flex-wrap:wrap; }
+  .era-title{ font-family:'Amiri', serif; font-weight:700; font-size:1.3rem; color:var(--oud-900); }
+  .era-dates{ font-family:'Markazi Text', serif; font-size:1.05rem; color:var(--clay-600); font-weight:600; white-space:nowrap; }
+  .era-duration{ font-size:.72rem; color:var(--emerald-700); font-weight:700; margin-bottom:.7rem; }
+  .era-body{ font-size:.93rem; line-height:1.9; color:var(--oud-700); }
+  .era-place{
+    display:inline-block; margin-top:.8rem; font-size:.72rem; letter-spacing:.04em;
+    color:var(--oud-900); background:var(--sand-100); border:1px solid rgba(74,56,42,.25);
+    padding:.2rem .7rem; border-radius:100px;
+  }
+  .bar-track{ height:5px; background:rgba(74,56,42,.12); border-radius:4px; margin:.6rem 0 .9rem; overflow:hidden; }
+  .bar-fill{ height:100%; background:linear-gradient(90deg, var(--clay-600), var(--gold-400)); border-radius:4px; width:0%; transition:width 1.1s ease .2s; }
+  .era.visible .bar-fill{ width:var(--w); }
+
+  @media (max-width:680px){
+    .era{ display:flex; flex-direction:row; align-items:flex-start; gap:1.2rem; }
+    .trunk{ right:34px; transform:none; }
+    .node{ flex:0 0 auto; width:56px; }
+    .card{ flex:1 1 auto; }
+    .medallion{ width:44px; height:44px; font-size:1rem; }
+    .card::before{ display:none; }
+    .era-num{ display:none; }
+  }
+
+  /* ============ FIGURES ============ */
+  .figures-section{ background:var(--night-950); color:var(--sand-50); }
+  .figures-section .section-eyebrow{ color:var(--gold-400); }
+  .figures-section .section-eyebrow::before{ background:var(--gold-400); }
+  .figures-section .section-heading{ color:var(--sand-50); }
+  .figures-section .section-note{ color:rgba(244,234,210,.75); }
+
+  .figures-grid{
+    max-width:1080px; margin:2.4rem auto 0; padding:0 1.4rem 5rem;
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:1.4rem;
+  }
+  .figure-card{
+    background:var(--night-800);
+    border:1px solid rgba(216,181,104,.2);
+    border-radius:6px;
+    padding:1.6rem 1.4rem;
+    opacity:0; transform:translateY(18px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .figure-card.visible{ opacity:1; transform:translateY(0); }
+  .figure-icon{
+    width:46px; height:46px; margin-bottom:1rem;
+    color:var(--gold-400);
+  }
+  .figure-icon svg{ width:100%; height:100%; }
+  .figure-name{ font-family:'Amiri', serif; font-weight:700; font-size:1.12rem; margin-bottom:.2rem; }
+  .figure-role{ font-family:'Markazi Text', serif; color:var(--ember-500); font-size:.92rem; margin-bottom:.7rem; }
+  .figure-fact{ font-size:.85rem; line-height:1.8; color:rgba(244,234,210,.75); }
+
+  /* ============ KINSHIP ============ */
+  .kinship-section{ background:var(--sand-50); }
+
+  .fork-diagram{
+    max-width:760px; margin:3rem auto 0; padding:0 1.4rem; text-align:center;
+    opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s ease;
+  }
+  .fork-diagram.visible{ opacity:1; transform:translateY(0); }
+  .fork-root{
+    display:inline-block;
+    font-family:'Amiri', serif; font-weight:700; font-size:1.12rem;
+    color:var(--oud-900);
+    background:linear-gradient(135deg, var(--gold-400), var(--gold-600));
+    padding:.6rem 1.6rem; border-radius:100px;
+    box-shadow:0 3px 10px rgba(44,33,24,.2);
+  }
+  .fork-stem{ width:2px; height:26px; background:var(--oud-700); margin:0 auto; }
+  .fork-bar{ height:2px; background:var(--oud-700); max-width:600px; margin:0 auto; }
+  .fork-branches{ display:flex; justify-content:space-between; max-width:600px; margin:0 auto; gap:1.5rem; }
+  .fork-branch{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; }
+  .fork-branch-stem{ width:2px; height:22px; background:var(--oud-700); }
+  .fork-node{ font-family:'Amiri', serif; font-weight:700; font-size:1rem; color:var(--oud-900); margin:.6rem 0 .5rem; }
+  .fork-chain{ font-size:.7rem; color:var(--oud-700); opacity:.8; line-height:1.7; margin-bottom:1rem; }
+  .fork-end{
+    display:flex; align-items:center; gap:.4rem;
+    font-family:'Amiri', serif; font-weight:700; font-size:1rem;
+    padding:.7rem 1.2rem; border-radius:8px;
+    border:1px solid rgba(74,56,42,.2);
+  }
+  .fork-end.prophet{ background:linear-gradient(135deg, #f4ead2, var(--gold-400)); color:var(--oud-900); }
+  .fork-end.family{ background:radial-gradient(circle at 30% 30%, #d9ecd9, var(--emerald-700)); color:#f3e9d2; }
+  .fork-end .star8{ color:var(--clay-600); flex:0 0 auto; width:16px; height:16px; }
+
+  @media (max-width:640px){
+    .fork-branches{ flex-direction:column; align-items:center; gap:2rem; }
+    .fork-bar{ display:none; }
+    .fork-branch{ max-width:280px; }
+  }
+
+  .marriage-card{
+    max-width:760px; margin:3rem auto 0; padding:1.6rem 1.8rem;
+    background:#fffdf6; border:1px solid rgba(74,56,42,.18); border-radius:8px;
+    box-shadow:0 4px 18px rgba(44,33,24,.08);
+    display:flex; gap:1.3rem; align-items:flex-start;
+    opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;
+  }
+  .marriage-card.visible{ opacity:1; transform:translateY(0); }
+  .marriage-icon{ flex:0 0 auto; width:44px; height:28px; color:var(--clay-600); margin-top:.3rem; }
+  .marriage-icon svg{ width:100%; height:100%; }
+  .marriage-text h3{ font-family:'Amiri', serif; font-weight:700; font-size:1.08rem; color:var(--oud-900); margin-bottom:.5rem; }
+  .marriage-text p{ font-size:.89rem; line-height:1.9; color:var(--oud-700); }
+
+  .clarity-grid{
+    max-width:1000px; margin:2rem auto 0; padding:0 1.4rem 5rem;
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:1.2rem;
+  }
+  .clarity-card{
+    background:var(--sand-100); border:1px solid rgba(74,56,42,.2); border-radius:6px;
+    padding:1.3rem 1.4rem;
+    opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease;
+  }
+  .clarity-card.visible{ opacity:1; transform:translateY(0); }
+  .clarity-tag{
+    display:inline-block; font-size:.7rem; font-weight:700; letter-spacing:.03em;
+    color:var(--clay-600); border:1px solid var(--clay-600); border-radius:100px;
+    padding:.15rem .7rem; margin-bottom:.7rem;
+  }
+  .clarity-card p{ font-size:.84rem; line-height:1.8; color:var(--oud-700); }
+
+  /* ============ FINALE ============ */
+  .finale{ background:linear-gradient(180deg, var(--sand-50), var(--sand-100)); text-align:center; }
+  .ladder{
+    max-width:760px; margin:2.6rem auto 0;
+    display:flex; flex-wrap:wrap; justify-content:center; align-items:center;
+    gap:.5rem .3rem;
+  }
+  .ladder .name{
+    font-family:'Amiri', serif; font-size:1.15rem; color:var(--oud-700);
+    opacity:0; transform:translateY(10px);
+    transition:opacity .5s ease, transform .5s ease;
+  }
+  .ladder.visible .name{ opacity:1; transform:translateY(0); }
+  .ladder .name.you{ color:var(--clay-600); font-weight:700; font-size:1.4rem; }
+  .ladder .sep{ color:var(--gold-600); }
+
+  .tree-crown{ width:220px; margin:3.4rem auto 0; opacity:.9; }
+
+  .footer{
+    text-align:center; padding:3rem 1.5rem 4rem;
+    color:var(--oud-700); font-size:.8rem; line-height:2;
+    border-top:1px solid rgba(74,56,42,.2);
+    max-width:700px; margin:0 auto;
+  }
+  .footer strong{ color:var(--oud-900); }
+</style>
+<noscript><style>
+  .era, .figure-card, .fork-diagram, .marriage-card, .clarity-card, .ladder .name{
+    opacity:1 !important; transform:none !important;
+  }
+  .route-path{ stroke-dashoffset:0 !important; }
+  .caravan{ opacity:1 !important; }
+</style></noscript>
+</head>
+<body>
+
+<div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="chapter-nav" aria-label="فصول الوثائقي">
+  <button class="chapter-dot active" data-target="#hero" aria-label="المقدمة"><span class="label">المقدمة</span></button>
+  <button class="chapter-dot" data-target="#map" aria-label="المسار"><span class="label">مسار الرحلة</span></button>
+  <button class="chapter-dot" data-target="#timeline" aria-label="الحقب"><span class="label">الحقب التاريخية</span></button>
+  <button class="chapter-dot" data-target="#figures" aria-label="الشخصيات"><span class="label">شخصيات مؤثرة</span></button>
+  <button class="chapter-dot" data-target="#kinship" aria-label="القرابة من النبي"><span class="label">القرابة من النبي ﷺ</span></button>
+  <button class="chapter-dot" data-target="#finale" aria-label="الخاتمة"><span class="label">من عامر إلى مهند</span></button>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="cinema-hero" id="hero">
+  <div class="sky"></div>
+  <div class="stars"></div>
+  <div class="dunes dunes-far">
+    <svg viewBox="0 0 1000 200" preserveAspectRatio="none"><path d="M0,160 C150,100 300,180 480,130 C650,85 800,150 1000,110 L1000,200 L0,200 Z" fill="#3a2a19"/></svg>
+  </div>
+  <div class="dunes dunes-near">
+    <svg viewBox="0 0 1000 200" preserveAspectRatio="none"><path d="M0,180 C180,120 340,190 520,150 C700,115 850,175 1000,140 L1000,200 L0,200 Z" fill="#241a10"/></svg>
+  </div>
+  <div id="dustLayer"></div>
+  <div class="vignette"></div>
+  <div class="hero-content">
+    <div class="kicker">آل العامر العقيلية · الأحساء</div>
+    <h1 class="hero-title">
+      <span class="word">رحلة</span> <span class="word">بني</span> <span class="word">عقيل</span> <span class="word">عبر</span>
+      <br>
+      <span class="word" style="animation-delay:1.22s">الزمن</span>
+    </h1>
+    <div class="hero-sub">من الطائف إلى الأحساء عبر أكثر من ألف عام</div>
+    <p class="hero-desc">
+      وثائقي تفاعلي يتتبع نسب الجد الجامع «عامر» من عقيل بن كعب بن ربيعة بن عامر بن صعصعة،
+      عبر تسع حقب تاريخية، حتى الجيل الثالث عشر اليوم.
+    </p>
+  </div>
+  <div class="scroll-cue"><div class="stick"></div><span>مرّر للبدء</span></div>
+</header>
+
+<!-- ============ MAP ============ -->
+<section class="map-section" id="map">
+  <div class="section-frame">
+    <div class="section-eyebrow">الفصل الأول</div>
+    <h2 class="section-heading">مسار الرحلة عبر الأجيال</h2>
+    <p class="section-note">مخطط زمني-مكاني تقريبي (غير مقيّد بمقياس جغرافي دقيق) يوضح اتجاه الترحال العام من الحجاز شرقاً نحو العراق، ثم العودة جنوباً نحو ساحل الخليج.</p>
+  </div>
+  <div class="map-stage" id="mapStage">
+    <svg viewBox="0 0 1000 320">
+      <path class="route-path-bg" d="M930,90 C 840,150 760,170 690,210 C 590,260 480,40 380,80 C 270,125 180,260 90,210"/>
+      <path class="route-path" id="routePath" d="M930,90 C 840,150 760,170 690,210 C 590,260 480,40 380,80 C 270,125 180,260 90,210"/>
+      <circle class="node-dot" cx="930" cy="90" r="7"/>
+      <circle class="node-dot" cx="690" cy="210" r="7"/>
+      <circle class="node-dot" cx="380" cy="80" r="7"/>
+      <circle class="node-dot" cx="90" cy="210" r="7"/>
+      <g class="caravan" id="caravanMarker" transform="translate(930,90)">
+        <circle r="11" fill="none" stroke="#c97a35" stroke-width="2"/>
+        <text x="0" y="5" text-anchor="middle" font-size="12">🐫</text>
+      </g>
+    </svg>
+    <div class="map-label above" style="left:93%; top:28.1%;">
+      <div class="num">القرن ١ هـ</div>
+      <div class="place">الطائف</div>
+    </div>
+    <div class="map-label below" style="left:69%; top:65.6%;">
+      <div class="num">١هـ – ٣٨٠هـ</div>
+      <div class="place">وادي العقيق</div>
+    </div>
+    <div class="map-label above" style="left:38%; top:25%;">
+      <div class="num">٣٨٠هـ – ٤٨٩هـ</div>
+      <div class="place">الموصل والكوفة</div>
+    </div>
+    <div class="map-label below" style="left:9%; top:65.6%;">
+      <div class="num">٦٥٠هـ – اليوم</div>
+      <div class="place">الأحساء</div>
+    </div>
+  </div>
+  <p class="map-note">اتجاه القراءة من اليمين (البداية) إلى اليسار (اليوم)</p>
+</section>
+
+<!-- ============ TIMELINE ============ -->
+<section id="timeline">
+  <div class="section-frame" style="padding-bottom:0;">
+    <div class="section-eyebrow">الفصل الثاني</div>
+    <h2 class="section-heading">تسع حقب، أكثر من ألف عام</h2>
+    <p class="section-note">كل حقبة تركت أثراً في مسار العائلة، من إمارات حكمت إلى هجرات فرضتها الظروف.</p>
+  </div>
+  <div class="timeline-wrap">
+    <div class="trunk"></div>
+    <div id="eras"></div>
+  </div>
+</section>
+
+<!-- ============ FIGURES ============ -->
+<section class="figures-section" id="figures">
+  <div class="section-frame">
+    <div class="section-eyebrow">الفصل الثالث</div>
+    <h2 class="section-heading">وجوه أثّرت في المسار</h2>
+    <p class="section-note">رموز توضيحية لأدوارهم، لا صور فعلية (لا توجد صور موثقة لهذه الشخصيات التاريخية).</p>
+  </div>
+  <div class="figures-grid" id="figuresGrid"></div>
+</section>
+
+<!-- ============ KINSHIP ============ -->
+<section class="kinship-section" id="kinship">
+  <div class="section-frame">
+    <div class="section-eyebrow">الفصل الرابع</div>
+    <h2 class="section-heading">القرابة من رسول الله ﷺ</h2>
+    <p class="section-note">نقطة الالتقاء الدقيقة بين نسبكم ونسب النبي ﷺ في كتب الأنساب الكلاسيكية، وصلة مصاهرة تاريخية موثقة، مع توضيح ما تعنيه وما لا تعنيه هذه القرابة.</p>
+  </div>
+
+  <div class="fork-diagram" id="forkDiagram">
+    <div class="fork-root">مضر بن نزار</div>
+    <div class="fork-stem"></div>
+    <div class="fork-bar"></div>
+    <div class="fork-branches">
+      <div class="fork-branch">
+        <div class="fork-branch-stem"></div>
+        <div class="fork-node">إلياس بن مضر</div>
+        <div class="fork-chain">مدركة · خزيمة · كنانة · فهر (قريش) · قصي · هاشم · عبدالمطلب</div>
+        <div class="fork-end prophet">
+          <svg class="star8" viewBox="0 0 40 40"><path d="M20 2 L23 15 L36 12 L26 20 L36 28 L23 25 L20 38 L17 25 L4 28 L14 20 L4 12 L17 15 Z" fill="currentColor"/></svg>
+          محمد ﷺ
+        </div>
+      </div>
+      <div class="fork-branch">
+        <div class="fork-branch-stem"></div>
+        <div class="fork-node">قيس عيلان بن مضر</div>
+        <div class="fork-chain">خصفة · عكرمة · منصور · هوازن · بكر · معاوية · عامر بن صعصعة</div>
+        <div class="fork-end family">عقيل ← آل العامر (أنتم)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="marriage-card" id="marriageCard">
+    <div class="marriage-icon">
+      <svg viewBox="0 0 40 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="14" cy="12" r="9"/><circle cx="26" cy="12" r="9"/></svg>
+    </div>
+    <div class="marriage-text">
+      <h3>صلة مصاهرة مباشرة</h3>
+      <p>تزوج <strong>عبدالمطلب بن هاشم</strong> (جد النبي ﷺ) من <strong>صفية بنت جندب بن حجير</strong>، من بني عامر بن صعصعة، فولدت له <strong>الحارث</strong> (أكبر أبناء عبدالمطلب) و<strong>قثم</strong>. فبنو عامر بن صعصعة هم أخوال الحارث بن عبدالمطلب، عمّ النبي ﷺ مباشرة، ومنه سلالة الصحابي أبو سفيان بن الحارث.</p>
+    </div>
+  </div>
+
+  <div class="clarity-grid" id="clarityGrid">
+    <div class="clarity-card">
+      <span class="clarity-tag">نسب عام</span>
+      <p>القرابة عبر مضر بن نزار يتشاركها كل قبائل قيس عيلان (عقيل، كلاب، هلال، نمير، سليم، ثقيف، غطفان...)، فهي واسعة وليست حصرية لعائلة واحدة.</p>
+    </div>
+    <div class="clarity-card">
+      <span class="clarity-tag">ليست نسباً هاشمياً</span>
+      <p>صلة "الشرف" (سيد / شريف) تعني تحديداً نسلاً مباشراً من النبي ﷺ عبر ابنته فاطمة، أو نسباً هاشمياً قرشياً صريحاً. عائلتكم قيسية هوازنية، فرع مستقل تماماً عن قريش وهاشم.</p>
+    </div>
+    <div class="clarity-card">
+      <span class="clarity-tag">مصاهرة موثقة</span>
+      <p>صلة صفية بنت جندب أخصّ من القرابة العامة، لكن المصادر المتاحة لا تحدد أي بطن من عامر بن صعصعة كانت منه تحديداً (عقيل أو غيره).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section class="finale" id="finale">
+  <div class="section-frame" style="padding-bottom:0;">
+    <div class="section-eyebrow" style="justify-content:center;">الخاتمة</div>
+    <h2 class="section-heading">من عامر إلى مهند</h2>
+    <p class="section-note" style="margin:0 auto;">ثلاثة عشر جيلاً موثقاً، سلسلة واحدة متصلة.</p>
+  </div>
+  <div class="ladder" id="ladder"></div>
+  <svg class="tree-crown" viewBox="0 0 200 160">
+    <path d="M100,160 L100,110" stroke="#4a3826" stroke-width="6" stroke-linecap="round"/>
+    <g id="crownLeaves"></g>
+  </svg>
+</section>
+
+<div class="footer">
+  مبني على السلسلة الموثقة في <strong>شجرة أسرة آل العامر العقيلية بالأحساء (1447هـ)</strong>،
+  ومصادر الأنساب التاريخية العامة (الجمهرة، ابن خلدون، ويكيبيديا العربية، ومنتديات الأنساب المتخصصة).
+  بعض التواريخ تقريبية ومتفاوتة بين المؤرخين، خصوصاً في المراحل الجاهلية والمبكرة.
+</div>
+
+<script>
+/* ---------- data ---------- */
+const eras = [
+  { num:"١", year:"قبل الإسلام", title:"الحجاز — الطائف", duration:"عدة قرون", place:"مكة / الطائف",
+    body:"مساكن بني عقيل الأولى، إلى جانب بقية فروع عامر بن صعصعة، قريبة من الطائف في الحجاز، قبل أن يتكاثروا ويبدأوا التوسع نحو نجد.", weight:20 },
+  { num:"٢", year:"~1هـ – 250هـ", title:"وادي العقيق — نجد", duration:"نحو 150–250 سنة", place:"وادي الدواسر حالياً",
+    body:"استقر بنو عقيل في وادي العقيق جنوب نجد، الأرض التي منحهم إياها النبي ﷺ بكتاب مكتوب لوفدهم الذي أسلم وبايع.", weight:35 },
+  { num:"٣", year:"80هـ – 380هـ", title:"الرحيل التدريجي نحو العراق", duration:"نحو 300 سنة", place:"الجزيرة الفراتية",
+    body:"بدأ التوافد شرقاً منذ حدود 80هـ مع بني عوف بن عقيل، واستمرت الهجرات المتقطعة عبر العصرين الأموي والعباسي حتى ضفاف الفرات.", weight:55 },
+  { num:"٤", year:"380هـ – 489هـ", title:"الدولة العقيلية — الموصل والكوفة", duration:"نحو 110 سنوات", place:"الموصل / الكوفة",
+    body:"سيطر أمراء بني عقيل (منهم المقلد وقرواش ومسلم بن قريش) على الموصل والكوفة والبلاد الفراتية، حتى سقطت عاصمتهم بيد السلاجقة.", weight:32 },
+  { num:"٥", year:"أواخر 5هـ", title:"العودة إلى شرق الجزيرة العربية", duration:"نقطة تحوّل", place:"البحرين / الأحساء / القطيف",
+    body:"بعد سقوط الموصل، رجعت أغلب فروع بني عقيل نحو ديارهم الأولى في شرق الجزيرة، لتبدأ حقبة جديدة من الإمارات المتعاقبة.", weight:15 },
+  { num:"٦", year:"~650هـ – 730هـ", title:"الإمارة العصفورية", duration:"نحو 80 سنة", place:"الأحساء",
+    body:"أسس عصفور بن راشد الإمارة العصفورية بعد إطاحته بالعيونيين، أول دولة عقيلية مستقلة في الأحساء.", weight:24 },
+  { num:"٧", year:"~730هـ – 830هـ", title:"إمارة بني جروان", duration:"نحو 100 سنة", place:"الأحساء / القطيف",
+    body:"خلفت إمارة بني جروان الدولة العصفورية، واستمرت نحو قرن من الزمن في السيطرة على المنطقة.", weight:30 },
+  { num:"٨", year:"~830هـ – 927هـ", title:"إمارة بني جبر", duration:"نحو 100–150 سنة", place:"الأحساء / البحرين / سواحل الخليج",
+    body:"سيطر الجبريون على كامل سواحل الخليج العربي بما فيها البحرين، حتى سقوطهم أمام البرتغاليين سنة 927هـ.", weight:38 },
+  { num:"٩", year:"إلى اليوم", title:"الاستقرار في الأحساء — آل العامر", duration:"أكثر من 13 جيلاً موثقاً", place:"الأحساء",
+    body:"استقر الجد «عامر» وذريته في الأحساء، وامتدت السلالة عبر حسين وفروعه حتى مهند بن محمد بن عبدالرحمن بن علي اليوم.", weight:100, final:true }
+];
+
+const figures = [
+  { name:"لبيد بن ربيعة العامري", role:"شاعر — صاحب إحدى المعلقات", fact:"من فحول الشعراء الجاهليين، أسلم وعاش حتى صدر الإسلام، ويُعد شعره من أرقى ما وصلنا من المعلقات السبع.",
+    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20 L18 6 M18 6 L14 6 M18 6 L18 10" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20 L8 20 M4 20 L4 16" stroke-linecap="round"/></svg>` },
+  { name:"عامر بن الطفيل", role:"فارس وزعيم بني عامر", fact:"من أشهر فرسان الجاهلية وقادة بني عامر بن صعصعة، عُرف بشجاعته وقيادته الحربية.",
+    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 4 L18 16 M18 16 L14 16 M18 16 L18 12" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="4" r="2"/></svg>` },
+  { name:"عقال بن خويلد العقيلي", role:"شاعر مخضرم — رئيس بني عقيل", fact:"شاعر مخضرم كان رئيساً لبني عقيل، وكان يهاجي النابغة الجعدي في أشعاره.",
+    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2 L14 9 L21 9 L15.5 13.5 L17.5 21 L12 16.5 L6.5 21 L8.5 13.5 L3 9 L10 9 Z" stroke-linejoin="round"/></svg>` },
+  { name:"عصفور بن راشد", role:"مؤسس الإمارة العصفورية", fact:"أطاح بالعيونيين وأسس أول دولة عقيلية مستقلة في الأحساء منتصف القرن السابع الهجري.",
+    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 18 L4 10 L12 4 L20 10 L20 18 Z" stroke-linejoin="round"/><path d="M9 18 L9 13 L15 13 L15 18" stroke-linejoin="round"/></svg>` },
+  { name:"أجود بن زامل", role:"من أمراء الدولة الجبرية", fact:"وُصف من قبل علماء عصره بأنه ملك واحة الأحساء والقطيف وزعيم أهل نجد.",
+    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8 L4 20 L20 20 L20 8 L12 3 Z" stroke-linejoin="round"/><path d="M9 20 L9 14 L15 14 L15 20"/></svg>` },
+  { name:"قرواش ومسلم بن قريش", role:"أمراء الدولة العقيلية بالموصل", fact:"من أبرز أمراء بني عقيل الذين حكموا الموصل والكوفة والبلاد الفراتية في القرنين الرابع والخامس الهجريين.",
+    icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="10" width="16" height="10" rx="1"/><path d="M4 10 L12 4 L20 10 M9 20 L9 15 L15 15 L15 20"/></svg>` }
+];
+
+/* ---------- render eras ---------- */
+const erasContainer = document.getElementById('eras');
+eras.forEach(e => {
+  const div = document.createElement('div');
+  div.className = 'era' + (e.final ? ' final' : '');
+  div.innerHTML = `
+    <span class="era-num">${e.num}</span>
+    <div class="node"><div class="medallion">${e.final ? '🌴' : ''}</div></div>
+    <div class="card">
+      <div class="era-eyebrow">
+        <span class="era-title">${e.title}</span>
+        <span class="era-dates">${e.year}</span>
+      </div>
+      <div class="era-duration">${e.duration}</div>
+      <div class="bar-track"><div class="bar-fill" style="--w:${e.weight}%"></div></div>
+      <p class="era-body">${e.body}</p>
+      <span class="era-place">${e.place}</span>
+    </div>`;
+  erasContainer.appendChild(div);
+});
+
+/* ---------- render figures ---------- */
+const figuresGrid = document.getElementById('figuresGrid');
+figures.forEach(f => {
+  const div = document.createElement('div');
+  div.className = 'figure-card';
+  div.innerHTML = `
+    <div class="figure-icon">${f.icon}</div>
+    <div class="figure-name">${f.name}</div>
+    <div class="figure-role">${f.role}</div>
+    <p class="figure-fact">${f.fact}</p>`;
+  figuresGrid.appendChild(div);
+});
+
+/* ---------- render ladder ---------- */
+const chain = ["مهند","محمد","عبدالرحمن","علي","عبدالله","علي","عبدالله","محمد","علي","عبدالله","علي","حسين","عامر"];
+const ladder = document.getElementById('ladder');
+chain.forEach((n,i) => {
+  const span = document.createElement('span');
+  span.className = 'name' + (i===0 ? ' you' : '');
+  span.textContent = n;
+  span.style.transitionDelay = (i*0.09)+'s';
+  ladder.appendChild(span);
+  if(i < chain.length-1){
+    const sep = document.createElement('span');
+    sep.className = 'sep';
+    sep.textContent = '‹';
+    ladder.appendChild(sep);
+  }
+});
+
+/* ---------- tree crown leaves ---------- */
+const crown = document.getElementById('crownLeaves');
+const leafPositions = [[100,105],[75,90],[125,90],[55,70],[100,65],[145,70],[75,45],[125,45],[100,25]];
+leafPositions.forEach((p,i)=>{
+  const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  c.setAttribute('cx',p[0]); c.setAttribute('cy',p[1]); c.setAttribute('r','13');
+  c.setAttribute('fill', i%2===0 ? '#3c5c46' : '#d8b568');
+  c.setAttribute('opacity','0.9');
+  crown.appendChild(c);
+});
+
+/* ---------- reveal on scroll ---------- */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('visible'); });
+}, { threshold:0.2 });
+document.querySelectorAll('.era, .figure-card, .fork-diagram, .marriage-card, .clarity-card').forEach(el=>io.observe(el));
+
+const ladderIo = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('visible'); });
+}, { threshold:0.3 });
+ladderIo.observe(ladder);
+
+/* ---------- map draw + caravan ---------- */
+const mapStage = document.getElementById('mapStage');
+const routePath = document.getElementById('routePath');
+const caravan = document.getElementById('caravanMarker');
+let mapAnimated = false;
+
+const mapIo = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting && !mapAnimated){
+      mapAnimated = true;
+      mapStage.classList.add('in-view');
+      const len = routePath.getTotalLength();
+      routePath.style.transition = 'none';
+      routePath.style.strokeDasharray = len;
+      routePath.style.strokeDashoffset = len;
+      const duration = 2600;
+      const start = performance.now();
+      function step(now){
+        const t = Math.min(1, (now-start)/duration);
+        const eased = 1 - Math.pow(1-t, 3);
+        routePath.style.strokeDashoffset = (1-eased)*len;
+        const pt = routePath.getPointAtLength(eased*len);
+        caravan.setAttribute('transform', `translate(${pt.x},${pt.y})`);
+        if(t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+  });
+}, { threshold:0.35 });
+mapIo.observe(mapStage);
+
+/* ---------- dust particles ---------- */
+const dustLayer = document.getElementById('dustLayer');
+for(let i=0;i<22;i++){
+  const d = document.createElement('div');
+  d.className = 'dust';
+  const size = 2 + Math.random()*3;
+  d.style.width = size+'px';
+  d.style.height = size+'px';
+  d.style.right = (Math.random()*100)+'%';
+  d.style.bottom = (Math.random()*20)+'%';
+  d.style.setProperty('--dx', (Math.random()*60-30)+'px');
+  d.style.animationDuration = (8+Math.random()*10)+'s';
+  d.style.animationDelay = (Math.random()*10)+'s';
+  dustLayer.appendChild(d);
+}
+
+/* ---------- progress rail ---------- */
+const progressFill = document.getElementById('progressFill');
+let ticking = false;
+window.addEventListener('scroll', ()=>{
+  if(!ticking){
+    requestAnimationFrame(()=>{
+      const h = document.documentElement;
+      const pct = (h.scrollTop)/(h.scrollHeight-h.clientHeight)*100;
+      progressFill.style.width = pct+'%';
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+/* ---------- chapter nav ---------- */
+const dots = document.querySelectorAll('.chapter-dot');
+const sections = ['#hero','#map','#timeline','#figures','#kinship','#finale'].map(s=>document.querySelector(s));
+dots.forEach(dot=>{
+  dot.addEventListener('click', ()=>{
+    document.querySelector(dot.dataset.target).scrollIntoView({behavior:'smooth'});
+  });
+});
+const navIo = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      const idx = sections.indexOf(en.target);
+      dots.forEach(d=>d.classList.remove('active'));
+      if(dots[idx]) dots[idx].classList.add('active');
+    }
+  });
+}, { threshold:0.5 });
+sections.forEach(s=>{ if(s) navIo.observe(s); });
+
+/* ---------- visibility safety net ----------
+   Some embedded/in-app browsers (e.g. WhatsApp's preview) don't fire
+   IntersectionObserver reliably, which would leave scroll-revealed
+   content stuck invisible. Force everything visible after a short
+   delay regardless, so information is never lost. */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.era, .figure-card, .fork-diagram, .marriage-card, .clarity-card').forEach(el => el.classList.add('visible'));
+    document.getElementById('ladder').classList.add('visible');
+    if(!mapAnimated){
+      mapAnimated = true;
+      mapStage.classList.add('in-view');
+      const len = routePath.getTotalLength();
+      routePath.style.transition = 'none';
+      routePath.style.strokeDasharray = len;
+      routePath.style.strokeDashoffset = 0;
+      const endPt = routePath.getPointAtLength(len);
+      caravan.setAttribute('transform', `translate(${endPt.x},${endPt.y})`);
+    }
+  }, 2200);
+});
+</script>
+
+</body>
+</html>
